@@ -12,4 +12,6 @@ router.post("/register", (req,res) =>{
 
     const user = newUser.save();
     res.json(user)
-})
+});
+
+module.exports = router;
