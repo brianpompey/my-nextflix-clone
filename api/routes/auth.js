@@ -11,7 +11,6 @@ router.post("/register", async (req,res) =>{
         password: CryptoJS.AES.encrypt(req.body.password, 'pass').toString(),
 
     });
-
     try{
         const user = await newUser.save();
         res.sratus(201).json(user)
@@ -19,5 +18,26 @@ router.post("/register", async (req,res) =>{
         res.status(500).json(err);
     }
 });
+
+
+//LOGIN
+
+router.post("login", async (req,res)=>{
+    try{
+        const user = User.findOne({email:req.body.email});
+        !user && res.status(401).json("Wrong password or Username");
+
+        const bytes  = CryptoJS.AES.decrypt(user.password ,'pass');
+        const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
+
+        originalPassword !== req.body.password && 
+            res.status(401).json("Wrong password or Username");
+
+            res.status(200).json(user);
+    }catch(err){
+        res.status(500).json(err)
+    }
+})
+
 
 module.exports = router;
