@@ -4,6 +4,8 @@ const CryptoJS = require("crypto-js");
 
 //UPDATE
 
+router.put("/:id", 
+
 //DELETE
 
 //GET
