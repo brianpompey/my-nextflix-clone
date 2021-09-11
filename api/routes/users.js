@@ -35,3 +35,6 @@ router.put("/:id", async (req,res)=>{
 //GET_ALL
 
 //GET_USER_STATS
+
+
+module.exports = router
