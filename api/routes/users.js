@@ -75,7 +75,7 @@ router.get("/", verify, async (req,res)=>{
 
 //GET_USER_STATS
 
-router.get("/stats" async(req,res)=>{
+router.get("/stats", async(req,res)=>{
     const today = new Date();
     const lastYear = today.setFullYear(today.setFullYear() - 1);
 
