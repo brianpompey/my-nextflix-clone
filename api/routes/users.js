@@ -5,7 +5,7 @@ const verify = require("../verifyToken");
 
 //UPDATE
 
-router.put("/:id", async (req,res)=>{
+router.put("/:id", verify, async (req,res)=>{
     if(req.user.id === req.params.id || req.user.isAdmin){
         if(req.body.password){
             req.body.password = CryptoJS.AES.encrypt(req.body.password, 'pass').toString()
@@ -30,7 +30,7 @@ router.put("/:id", async (req,res)=>{
 
 //DELETE
 
-router.delete("/:id", async (req,res)=>{
+router.delete("/:id", verify, async (req,res)=>{
     if(req.user.id === req.params.id || req.user.isAdmin){
         try{
             await User.findByIdAndDelete(req.params.id);
@@ -45,6 +45,16 @@ router.delete("/:id", async (req,res)=>{
 
 
 //GET
+
+router.get("/:id", async (req,res)=>{
+    try{
+        const user = await User.findById(req.params.id);
+        const { password, ...info } = user._doc; 
+        res.status(200).json(info);
+    } catch(err){
+        res.status(500).json(err);
+    }
+});
 
 //GET_ALL
 
