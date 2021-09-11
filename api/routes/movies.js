@@ -22,13 +22,17 @@ router.post("/", verify, async (req,res)=>{
 
 //UPDATE
 
-router.post("/", verify, async (req,res)=>{
+router.put("/:id", verify, async (req,res)=>{
     if(req.user.isAdmin){
-        const newMovie = new Movie(req.body);
-
         try{
-            const savedMovie = await newMovie.save();
-            res.status(201).json(savedMovie);
+            const updatedMovie = await Movie.findByIdAndUpdate(
+                req.params.id, 
+                {
+                    $set: req.body,  
+                },
+                    {new:true}
+            );
+            res.status(200).json(updatedMovie);
         }catch(err){
             res.status(500).json(err)
         }
@@ -40,46 +44,55 @@ router.post("/", verify, async (req,res)=>{
 //DELETE
 
 router.delete("/:id", verify, async (req,res)=>{
-    if(req.user.id === req.params.id || req.user.isAdmin){
+    if(req.user.isAdmin){
         try{
-            await User.findByIdAndDelete(req.params.id);
-            res.status(200).json("User has been deleted...");
-        } catch(err){
+            await Movie.findByIdAndDelete(req.params.id);
+            res.status(200).json("That Movie has been deleted!");
+        }catch(err){
             res.status(500).json(err)
         }
     } else {
-        res.status(403).json("You can only delete your account!");
+        res.status(403).json("You are not allowed to do that !");
     }
 });
 
 
 //GET
 
-router.get("/:id", async (req,res)=>{
+router.get("/:id", verify, async (req,res)=>{
     try{
-        const user = await User.findById(req.params.id);
-        const { password, ...info } = user._doc; 
-        res.status(200).json(info);
-    } catch(err){
-        res.status(500).json(err);
+        const movie = await Movie.findById(req.params.id);
+        res.status(200).json(movie);
+    }catch(err){
+        res.status(500).json(err)
     }
 });
 
-//GET_ALL
 
-router.get("/", verify, async (req,res)=>{
-    const query = req.query.new;
-    if(req.user.isAdmin){
-        try{
-            const users = query ? await User.find().limit(10) : await User.find();
-            res.status(200).json(users);
-        } catch(err){
-            res.status(500).json(err)
+//GET_RANDOM_MOVIE
+
+router.get("/random", verify, async (req,res)=>{
+    const type = req.query.type;
+    let movie;
+    try{
+        if(type === "series") {
+            movie = await Movie.aggregate([
+                { $match: { isSeries: true } },
+                { $sample: { size: 1 } },
+            ]);
+        } else {
+            movie = await Movie.aggregate([
+                { $match: { isSeries: false } },
+                { $sample: { size: 1 } },
+            ]);
         }
-    } else {
-        res.status(403).json("You are not allowed to see that!!");
+        res.status(200).json(movie);
+    }catch(err){
+        res.status(500).json(err)
     }
 });
+
+
 
 
 //GET_USER_STATS
