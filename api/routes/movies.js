@@ -95,46 +95,20 @@ router.get("/random", verify, async (req,res)=>{
 
 
 
-//GET_USER_STATS
+//GET ALL
 
-router.get("/stats" async(req,res)=>{
-    const today = new Date();
-    const lastYear = today.setFullYear(today.setFullYear() - 1);
-
-    const monthsArray = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
-
-    try{
-        const data = await User.aggregate([
-            {
-                $project:{
-                    month: {$month: "$createdAt"},
-                },
-            },
-            {
-                $group:{
-                    _id: "$month",
-                    total: {$sum:1},
-                },
-            },
-        ]);
-        res.status(200).json(data);
-    }catch(err){
+router.get("/", verify, async (req, res) => {
+    if (req.user.isAdmin) {
+      try {
+        const movies = await Movie.find();
+        res.status(200).json(movies.reverse());
+      } catch (err) {
         res.status(500).json(err);
+      }
+    } else {
+      res.status(403).json("You are not allowed!");
     }
-});
+});  
 
 
 module.exports = router
