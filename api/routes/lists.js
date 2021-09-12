@@ -4,7 +4,7 @@ const verify = require("../verifyToken");
 
 //CREATE
 
-router.post("/", verify, async (req, res) => {
+router.post("/", async (req, res) => {
   if (req.user.isAdmin) {
     const newList = new List(req.body);
     try {
@@ -20,7 +20,7 @@ router.post("/", verify, async (req, res) => {
 
 //DELETE
 
-router.delete("/:id", verify, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   if (req.user.isAdmin) {
     try {
       await List.findByIdAndDelete(req.params.id);
@@ -35,7 +35,7 @@ router.delete("/:id", verify, async (req, res) => {
 
 //GET
 
-router.get("/", verify, async (req, res) => {
+router.get("/", async (req, res) => {
   const typeQuery = req.query.type;
   const genreQuery = req.query.genre;
   let list = [];
