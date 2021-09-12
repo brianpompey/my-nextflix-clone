@@ -10,14 +10,13 @@ const listRoute = require("./routes/lists");
 
 dotenv.config();
 
-main().catch(err => console.log(err));
 
-async function main() {
-    await mongoose.connect('process.env.mongodb+srv://brianpompey:Melissa1217@cluster0.tp6xn.mongodb.net/netflix?retryWrites=true&w=majority');
 
-    console.log("DB Connection Successful");
-
-  }
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("DB Connection Successfull"))
+  .catch((err) => {
+    console.error(err);
+  });
 
 app.use(express.json());
 
